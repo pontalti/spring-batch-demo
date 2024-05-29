@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "c9033c5f-3563-42d2-852c-fa16d756321d",
+		"name": "Spring Batch demo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1700952"
+	},
+	"item": [
+		{
+			"name": "Spring batch instrument",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/dev/spring-batch-demo/src/main/resources/input.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/instrument/importData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"instrument",
+						"importData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spring batch instruments",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/instrument",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"instrument"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spring batch customer",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/customer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Spring batch customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/dev/spring-batch-demo/src/main/resources/customers.csv"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/customer/importData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"customer",
+						"importData"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
