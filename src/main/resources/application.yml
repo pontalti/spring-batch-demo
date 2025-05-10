@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 400MB
+      max-request-size: 400MB
   threads:
     virtual.enabled: true
   devtools:
@@ -39,3 +43,7 @@ springdoc:
   swagger-ui:
     path: /swagger-ui-custom.html
     operations-sorter: method
+
+app:
+  # Should be changed to your own path in your Linux or Windows
+  temp-storage: ${user.home}/apps/spring-batch-demo/temp_storage_spring_batch/ 

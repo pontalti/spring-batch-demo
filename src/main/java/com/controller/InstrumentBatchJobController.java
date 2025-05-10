@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -16,9 +18,9 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,14 +29,16 @@ import com.entity.InstrumentPriceModifier;
 import com.repository.InstrumentRepo;
 
 @RestController
-@RequestMapping({"/instrument/","/instrument"})
 public class InstrumentBatchJobController {
 
-	private final String TEMP_STORAGE = "C:\\dev\\temp_storage_spring_batch";
+	private static final Logger LOG = LoggerFactory.getLogger(InstrumentBatchJobController.class);
 
-	private JobLauncher jobLauncher;
-	private Job instrumentJob;
-	private InstrumentRepo repository;
+	@Value("${app.temp-storage}")
+	private String tempStorage;
+
+	private final JobLauncher jobLauncher;
+	private final Job instrumentJob;
+	private final InstrumentRepo repository;
 	
 	public InstrumentBatchJobController(JobLauncher jobLauncher, Job instrumentJob, InstrumentRepo repository) {
 		super();
@@ -43,31 +47,31 @@ public class InstrumentBatchJobController {
 		this.repository = repository;
 	}
 
-	@PostMapping(path = {"/importData", "/importData/"})
+	@PostMapping(path = {"/instrument/importData"})
 	public void startBatch(@RequestParam("file") MultipartFile multipartFile) {
 
 		try {
 			String originalFileName = multipartFile.getOriginalFilename();
-			File fileToImport = new File(TEMP_STORAGE + originalFileName);
+			File fileToImport = new File(tempStorage + originalFileName);
 			multipartFile.transferTo(fileToImport);
 
 			JobParameters jobParameters = new JobParametersBuilder()
-					.addString("fullPathFileName", TEMP_STORAGE + originalFileName)
+					.addString("fullPathFileName", tempStorage + originalFileName)
 					.addLong("startAt", System.currentTimeMillis()).toJobParameters();
 
 			JobExecution execution = jobLauncher.run(instrumentJob, jobParameters);
 
 			if (execution.getExitStatus().getExitCode().equals(ExitStatus.COMPLETED)) {
-				Files.deleteIfExists(Paths.get(TEMP_STORAGE + originalFileName));
+				Files.deleteIfExists(Paths.get(tempStorage + originalFileName));
 			}
 
 		} catch (JobExecutionAlreadyRunningException | JobRestartException | 
 					JobInstanceAlreadyCompleteException | JobParametersInvalidException | IOException e) {
-			e.printStackTrace();
+			LOG.error("Error -> {}", e);
 		}
 	}
 
-	@GetMapping
+	@GetMapping("/instrument")
 	public List<InstrumentPriceModifier> getAll() {
 		return this.repository.findAll();
 	}
